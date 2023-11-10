@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wafer-deployment
+  namespace: prakhar
+spec:
+  selector:
+    matchLabels:
+      app: frontend-wafer
+      tier: frontend-wafer
+      track: stable
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: frontend-wafer
+        tier: frontend-wafer
+        track: stable
+    spec:
+      containers:
+        - name: wafer
+          image: prakhar22/wafer:db
+          ports:
+            - name: frontservice
+              containerPort: 8501
+          env:
+            - name: MONGO_DB_HOST
+              value: mongodbservice
+            - name: MYSQL_HOST_IP
+              value: localhost
+            - name: MYSQL_USER
+              value: prakhar
+            - name: MYSQL_PASSWORD
+              value: "123456"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wafer-service
+  namespace: prakhar
+spec:
+  selector:
+    app: frontend-wafer
+    tier: frontend-wafer
+  ports:
+  - protocol: "TCP"
+    port: 27017
+    targetPort: 27017
+  type: LoadBalancer
+
+
